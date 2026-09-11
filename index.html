@@ -1,1 +1,325 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubonpan Multiplayer Bingo</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
+    <!-- LOBBY SCREEN -->
+    <div id="lobby-screen" class="bg-slate-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-slate-700">
+        <h1 class="text-3xl font-bold text-center mb-6 text-indigo-400">🎯 UBONPAN BINGO</h1>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">ชื่อผู้เล่น / ผู้คุมเกม:</label>
+                <input type="text" id="player-name" placeholder="กรอกชื่อของคุณ..." class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-indigo-500 text-white">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1 text-slate-300">เลือกบทบาท:</label>
+                <select id="role-select" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-indigo-500 text-white" onchange="toggleCardOptions()">
+                    <option value="player">ผู้เล่น (Player)</option>
+                    <option value="host">ผู้คุมเกม (Host - สุ่มเลข)</option>
+                </select>
+            </div>
+            <div id="card-count-container">
+                <label class="block text-sm font-medium mb-1 text-slate-300">จำนวนใบ Bingo (1-3 ใบ):</label>
+                <select id="card-count" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg focus:outline-none focus:border-indigo-500 text-white">
+                    <option value="1">1 ใบ (ใหญ่ชัดเจน)</option>
+                    <option value="2">2 ใบ (กำลังดี)</option>
+                    <option value="3">3 ใบ (ท้าทายสายตา)</option>
+                </select>
+            </div>
+            <button onclick="joinGame()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-semibold rounded-lg shadow-lg transition duration-200">เข้าสู่เกม</button>
+        </div>
+    </div>
+
+    <!-- HOST SCREEN -->
+    <div id="host-screen" class="hidden w-full max-w-2xl bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-indigo-400">🎮 แผงควบคุม Host (สุ่มเลข)</h2>
+            <button onclick="resetGame()" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-sm font-semibold rounded-lg">รีเซ็ตเกมใหม่</button>
+        </div>
+        <div class="text-center bg-slate-900 p-8 rounded-xl border border-slate-700 mb-6">
+            <p class="text-gray-400 text-sm mb-2">หมายเลขล่าสุดที่ออก</p>
+            <div id="current-called-number" class="text-7xl font-extrabold text-indigo-400">-</div>
+        </div>
+        <button onclick="drawNumber()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-xl font-bold rounded-xl shadow-lg transition duration-200 mb-6">🎲 สุ่มหมายเลขถัดไป</button>
+        <div>
+            <p class="text-sm font-semibold mb-2 text-slate-300">ประวัติหมายเลขที่ออกแล้ว (<span id="called-count">0</span>/75):</p>
+            <div id="called-history" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-3 bg-slate-900 rounded-lg border border-slate-700 text-sm"></div>
+        </div>
+    </div>
+
+    <!-- PLAYER SCREEN -->
+    <div id="player-screen" class="hidden w-full max-w-6xl mx-auto p-4">
+        <div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 p-4 rounded-xl mb-6 border border-slate-700 gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-indigo-400" id="display-player-name">ผู้เล่น: -</h2>
+                <p class="text-sm text-slate-400">สถานะ: รอ Host สุ่มเลข...</p>
+            </div>
+            <div class="bg-slate-900 px-6 py-3 rounded-lg border border-slate-700 text-center">
+                <span class="text-xs text-slate-400 block">เลขล่าสุดที่ออก</span>
+                <span id="player-latest-number" class="text-3xl font-bold text-emerald-400">-</span>
+            </div>
+        </div>
+
+        <!-- Cards Container (Responsive Grid for 1-3 cards) -->
+        <div id="boards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center"></div>
+    </div>
+
+    <!-- WINNER MODAL -->
+    <div id="winner-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 border border-slate-700 p-8 rounded-2xl max-w-md w-full text-center shadow-2xl animate-bounce">
+            <h2 class="text-4xl font-extrabold text-yellow-400 mb-2">🎉 BINGO! 🎉</h2>
+            <p class="text-lg text-slate-300 mb-6" id="winner-announcement">ผู้ชนะคือ...</p>
+            <button onclick="location.reload()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-xl w-full">เล่นใหม่อีกครั้ง</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // TODO: แทนที่ค่า Config นี้ด้วย Firebase Realtime Database ของคุณเอง
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "https://ubonpan-smartfarm-default-rtdb.firebaseio.com/", // ใช้โปรเจคเดิมของคุณได้เลย
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.db = db;
+        window.ref = ref;
+        window.set = set;
+        window.get = get;
+        window.update = update;
+        window.onValue = onValue;
+    </script>
+
+    <!-- Game Logic Script -->
+    <script>
+        let playerName = "";
+        let role = "player";
+        let cardCount = 1;
+        let playerBoards = [];
+        let calledNumbersList = [];
+
+        function toggleCardOptions() {
+            const roleSelect = document.getElementById("role-select").value;
+            document.getElementById("card-count-container").style.display = roleSelect === "host" ? "none" : "block";
+        }
+
+        function generateBingoCard() {
+            const cols = [
+                generateCol(1, 15, 5),   // B
+                generateCol(16, 30, 5),  // I
+                generateCol(31, 45, 4, true), // N (มี Free ตรงกลาง)
+                generateCol(46, 60, 5),  // G
+                generateCol(61, 75, 5)   // O
+            ];
+
+            let board = [];
+            for (let r = 0; r < 5; r++) {
+                let row = [];
+                for (let c = 0; c < 5; c++) {
+                    if (c === 2 && r === 2) {
+                        row.push({ number: "FREE", marked: true });
+                    } else {
+                        let colIdx = c;
+                        let numIdx = r > 2 && c === 2 ? r - 1 : r;
+                        row.push({ number: cols[colIdx][numIdx], marked: false });
+                    }
+                }
+                board.push(row);
+            }
+            return board;
+        }
+
+        function generateCol(min, max, count, hasFree = false) {
+            let nums = [];
+            while(nums.length < count) {
+                let n = Math.floor(Math.random() * (max - min + 1)) + min;
+                if(!nums.includes(n)) nums.push(n);
+            }
+            return nums;
+        }
+
+        function joinGame() {
+            const nameInput = document.getElementById("player-name").value.trim();
+            if(!nameInput) {
+                alert("กรุณากรอกชื่อก่อนเข้าเกม!");
+                return;
+            }
+            playerName = nameInput;
+            role = document.getElementById("role-select").value;
+            cardCount = parseInt(document.getElementById("card-count").value);
+
+            document.getElementById("lobby-screen").classList.add("hidden");
+
+            if(role === "host") {
+                document.getElementById("host-screen").classList.remove("hidden");
+                initHostListeners();
+            } else {
+                document.getElementById("player-screen").classList.remove("hidden");
+                document.getElementById("display-player-name").innerText = `ผู้เล่น: ${playerName}`;
+                
+                // สร้างใบกระดานตามจำนวนที่เลือก
+                playerBoards = [];
+                for(let i=0; i<cardCount; i++) {
+                    playerBoards.push(generateBingoCard());
+                }
+                renderPlayerBoards();
+                initPlayerListeners();
+            }
+        }
+
+        function renderPlayerBoards() {
+            const container = document.getElementById("boards-container");
+            container.innerHTML = "";
+
+            playerBoards.forEach((board, boardIndex) => {
+                let cardHtml = `
+                    <div class="bg-slate-800 p-4 rounded-2xl border border-slate-700 shadow-lg w-full max-w-sm">
+                        <h3 class="text-center font-bold text-indigo-400 mb-3">ใบ Bingo ที่ ${boardIndex + 1}</h3>
+                        <div class="grid grid-cols-5 gap-1.5 text-center font-semibold">
+                            <div class="bg-indigo-900/60 py-2 rounded text-xs text-indigo-300">B</div>
+                            <div class="bg-indigo-900/60 py-2 rounded text-xs text-indigo-300">I</div>
+                            <div class="bg-indigo-900/60 py-2 rounded text-xs text-indigo-300">N</div>
+                            <div class="bg-indigo-900/60 py-2 rounded text-xs text-indigo-300">G</div>
+                            <div class="bg-indigo-900/60 py-2 rounded text-xs text-indigo-300">O</div>
+                `;
+
+                for(let r=0; r<5; r++) {
+                    for(let c=0; c<5; c++) {
+                        let cell = board[r][c];
+                        let bgClass = cell.marked ? "bg-emerald-600 text-white shadow-inner scale-95" : "bg-slate-900 text-slate-200 hover:bg-slate-700";
+                        cardHtml += `<div id="cell-${boardIndex}-${r}-${c}" class="h-12 flex items-center justify-center rounded text-sm sm:text-base transition-all duration-150 ${bgClass}">${cell.number}</div>`;
+                    }
+                }
+                cardHtml += `</div></div>`;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        // --- Firebase Host Functions ---
+        function initHostListeners() {
+            window.onValue(window.ref(window.db, 'bingoGame'), (snapshot) => {
+                const data = snapshot.val();
+                if(data) {
+                    calledNumbersList = data.calledNumbers || [];
+                    document.getElementById("current-called-number").innerText = data.lastCalled || "-";
+                    document.getElementById("called-count").innerText = calledNumbersList.length;
+                    
+                    let historyHtml = calledNumbersList.map(n => `<span class="px-2.5 py-1 bg-slate-800 rounded border border-slate-700">${n}</span>`).join('');
+                    document.getElementById("called-history").innerHTML = historyHtml;
+                }
+            });
+        }
+
+        function drawNumber() {
+            if(calledNumbersList.length >= 75) {
+                alert("ออกครบทุกหมายเลขแล้ว!");
+                return;
+            }
+            let num;
+            do {
+                num = Math.floor(Math.random() * 75) + 1;
+            } while(calledNumbersList.includes(num));
+
+            calledNumbersList.push(num);
+
+            window.set(window.ref(window.db, 'bingoGame'), {
+                calledNumbers: calledNumbersList,
+                lastCalled: num,
+                winner: null
+            });
+        }
+
+        function resetGame() {
+            window.set(window.ref(window.db, 'bingoGame'), {
+                calledNumbers: [],
+                lastCalled: null,
+                winner: null
+            });
+            alert("รีเซ็ตเกมเรียบร้อย!");
+        }
+
+        // --- Firebase Player Functions ---
+        function initPlayerListeners() {
+            window.onValue(window.ref(window.db, 'bingoGame'), (snapshot) => {
+                const data = snapshot.val();
+                if(!data) return;
+
+                calledNumbersList = data.calledNumbers || [];
+                let lastCalled = data.lastCalled || "-";
+                document.getElementById("player-latest-number").innerText = lastCalled;
+
+                // ตรวจสอบผู้ชนะระดับ Global
+                if(data.winner) {
+                    document.getElementById("winner-announcement").innerText = `ผู้เล่น "${data.winner}" ทำการ BINGO สำเร็จแล้ว!`;
+                    document.getElementById("winner-modal").classList.remove("hidden");
+                    return;
+                }
+
+                // อัปเดตการมาร์กเลขบนกระดานผู้เล่นอัตโนมัติ
+                playerBoards.forEach((board, bIdx) => {
+                    let hasChanged = false;
+                    for(let r=0; r<5; r++) {
+                        for(let c=0; c<5; c++) {
+                            if(board[r][c].number !== "FREE" && calledNumbersList.includes(board[r][c].number)) {
+                                if(!board[r][c].marked) {
+                                    board[r][c].marked = true;
+                                    hasChanged = true;
+                                }
+                            }
+                        }
+                    }
+                    if(hasChanged) {
+                        renderPlayerBoards();
+                        checkWinCondition(bIdx);
+                    }
+                });
+            });
+        }
+
+        function checkWinCondition(boardIndex) {
+            let board = playerBoards[boardIndex];
+            let isBingo = false;
+
+            // เช็คแนวนอน
+            for(let r=0; r<5; r++) {
+                if(board[r].every(cell => cell.marked)) isBingo = true;
+            }
+            // เช็คแนวตั้ง
+            for(let c=0; c<5; c++) {
+                if(board.every(row => row[c].marked)) isBingo = true;
+            }
+            // เช็คแนวทแยงซ้ายไปขวา
+            if([0,1,2,3,4].every(i => board[i][i].marked)) isBingo = true;
+            // เช็คแนวทแยงขวาไปซ้าย
+            if([0,1,2,3,4].every(i => board[i][4-i].marked)) isBingo = true;
+
+            if(isBingo) {
+                // ส่งชื่อผู้ชนะขึ้น Firebase ทันที
+                window.update(window.ref(window.db, 'bingoGame'), {
+                    winner: playerName
+                });
+            }
+        }
+    </script>
+</body>
+</html>
