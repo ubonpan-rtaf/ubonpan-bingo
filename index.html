@@ -10,61 +10,35 @@
     <style>
         body { 
             font-family: 'Prompt', sans-serif; 
-            background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 27, 75, 0.9)), url('bg.jpg');
+            background-size: cover;
+            background-position: center;
             background-attachment: fixed;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        /* Pure CSS Mesh Glow Background Effects */
-        body::before {
-            content: '';
-            position: absolute;
-            top: -10%;
-            left: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: rgba(99, 102, 241, 0.12);
-            filter: blur(100px);
-            border-radius: 50%;
-            z-index: -1;
-        }
-        body::after {
-            content: '';
-            position: absolute;
-            bottom: -10%;
-            right: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: rgba(168, 85, 247, 0.1);
-            filter: blur(100px);
-            border-radius: 50%;
-            z-index: -1;
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         .bingo-card {
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(99, 102, 241, 0.25);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
         .glow-text {
             text-shadow: 0 0 25px rgba(99, 102, 241, 0.7);
         }
         .cell-marked {
-            background: linear-gradient(135deg, #10b981, #047857);
+            background: linear-gradient(135deg, #10b981, #059669);
             color: #ffffff;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(16, 185, 129, 0.6);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 15px rgba(16, 185, 129, 0.5);
             border-color: #34d399 !important;
             transform: scale(0.96);
         }
     </style>
 </head>
-<body class="text-slate-100 flex flex-col items-center justify-center p-4">
+<body class="text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
     <!-- FLOATING VOLUME CONTROL -->
     <div class="fixed top-4 right-4 glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 z-50 shadow-2xl">
@@ -80,12 +54,12 @@
     <audio id="sfx-draw" src="draw.mp3" preload="auto"></audio>
 
     <!-- LOBBY SCREEN -->
-    <div id="lobby-screen" class="glass-panel p-8 rounded-3xl w-full max-w-md my-auto">
+    <div id="lobby-screen" class="glass-panel p-8 rounded-3xl w-full max-w-md">
         <h1 class="text-3xl font-extrabold text-center mb-6 text-indigo-400 glow-text">🎯 UBONPAN BINGO</h1>
         <div class="space-y-4">
             <div>
                 <label class="block text-sm font-medium mb-1 text-slate-300">ชื่อผู้เล่น / เจ้ามือ:</label>
-                <input type="text" id="player-name" placeholder="กรอกชื่อของคุณ..." class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition">
+                <input type="text" id="player-name" placeholder="กรอกชื่อของคุณ (ซ้ำได้อิสระ)..." class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition">
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1 text-slate-300">เลือกบทบาท:</label>
@@ -122,7 +96,7 @@
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <div class="text-center bg-slate-900/70 p-4 rounded-2xl border border-slate-700/60 shadow-inner">
+            <div class="text-center bg-slate-900/70 p-4 rounded-2xl border border-slate-700/60">
                 <p class="text-indigo-300 text-xs mb-1">เลขล่าสุด</p>
                 <div id="current-called-number" class="text-6xl font-black text-indigo-400 glow-text">-</div>
             </div>
@@ -206,6 +180,13 @@
         let cardCount = 1;
         let playerBoards = [];
         let calledNumbersList = [];
+
+        // Generate or retrieve a unique player session ID to prevent duplicate name blocks
+        let playerId = sessionStorage.getItem("bingo_player_id");
+        if (!playerId) {
+            playerId = 'p_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+            sessionStorage.setItem("bingo_player_id", playerId);
+        }
 
         // Audio Management
         const bgm = document.getElementById('bgm');
@@ -355,7 +336,7 @@
                     <div class="bingo-card p-5 rounded-3xl w-full max-w-sm">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-2">
                             <span class="text-xs font-semibold text-indigo-300 tracking-wider uppercase">BINGO CARD #${boardIndex + 1}</span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-pulse"></span>
                         </div>
                         <div class="grid grid-cols-5 gap-2 text-center font-bold">
                             <div class="bg-indigo-600/30 text-indigo-300 py-2 rounded-xl text-xs border border-indigo-500/30">B</div>
@@ -396,7 +377,7 @@
                     document.getElementById("called-history").innerHTML = historyHtml;
 
                     let players = data.players || {};
-                    let playersHtml = Object.keys(players).map(p => `<div class="px-3 py-1.5 bg-slate-800/90 rounded-xl border border-slate-700 flex justify-between text-xs"><span>👤 ${p}</span><span class="text-indigo-400 font-medium">${players[p].status}</span></div>`).join('');
+                    let playersHtml = Object.values(players).map(p => `<div class="px-3 py-1.5 bg-slate-800/90 rounded-xl border border-slate-700 flex justify-between text-xs"><span>👤 ${p.name}</span><span class="text-indigo-400 font-medium">${p.status}</span></div>`).join('');
                     document.getElementById("players-list").innerHTML = playersHtml || '<span class="text-slate-500 text-xs">ยังไม่มีผู้เล่นในระบบ</span>';
 
                     if(data.winner) {
@@ -417,9 +398,7 @@
                 num = Math.floor(Math.random() * 75) + 1;
             } while(calledNumbersList.includes(num));
 
-            // เล่นเสียงเอฟเฟกต์ (ประมาณ 3 วินาทีตามที่ผู้ใช้ต้องการ)
             playDrawSound();
-
             calledNumbersList.push(num);
 
             aiBots.forEach(bot => {
@@ -439,7 +418,8 @@
 
             window.get(window.ref(window.db, 'bingoGame/players')).then((snapshot) => {
                 let players = snapshot.val() || {};
-                players[botName] = { status: "กำลังเล่น (Bot)" };
+                let botKey = 'bot_' + Math.random().toString(36).substr(2, 6);
+                players[botKey] = { name: botName, status: "กำลังเล่น (Bot)" };
                 window.update(window.ref(window.db, 'bingoGame'), { players: players });
             });
             alert(`เพิ่ม ${botName} เข้ามาแข่งขันเรียบร้อย!`);
@@ -509,9 +489,10 @@
                 });
             });
 
+            // ใช้ playerId เฉพาะตัวในการบันทึกชื่อซ้ำได้อิสระ ไม่บล็อก
             window.get(window.ref(window.db, 'bingoGame/players')).then((snapshot) => {
                 let players = snapshot.val() || {};
-                players[playerName] = { status: "กำลังเล่น" };
+                players[playerId] = { name: playerName, status: "กำลังเล่น" };
                 window.update(window.ref(window.db, 'bingoGame'), { players: players });
             });
         }
