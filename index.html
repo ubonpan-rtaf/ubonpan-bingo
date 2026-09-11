@@ -67,44 +67,90 @@
 
     <!-- LOBBY SCREEN -->
     <div id="lobby-screen" class="glass-panel p-8 rounded-3xl w-full max-w-md">
-        <h1 class="text-3xl font-extrabold text-center mb-4 text-indigo-400 glow-text">🎯 UBONPAN BINGO</h1>
+        <h1 class="text-3xl font-extrabold text-center mb-3 text-indigo-400 glow-text">🎯 UBONPAN BINGO</h1>
         
         <!-- แบนเนอร์ประกาศปรับปรุงระบบ -->
-        <div class="bg-indigo-900/40 border border-indigo-500/50 p-3 rounded-xl mb-5 text-center shadow-inner">
-            <p class="text-[11px] text-indigo-200">📢 <strong>ประกาศ:</strong> ระบบจะมีการพักปรับปรุงในช่วงเวลา <strong>01:00 - 04:00 น.</strong> ของทุกวัน หากพ้นช่วงเวลาดังกล่าวแล้วสามารถเข้าเล่นได้ตามปกติครับ</p>
+        <div class="bg-indigo-900/40 border border-indigo-500/50 p-2.5 rounded-xl mb-4 text-center shadow-inner">
+            <p class="text-[10px] text-indigo-200">📢 <strong>ประชาสัมพันธ์:</strong> ช่วงเวลาพักปรับปรุงระบบ <strong>03:00 - 04:00 น.</strong> ของทุกวัน หากพ้นช่วงเวลาดังกล่าวแล้วสามารถเล่นได้ปกติครับ</p>
         </div>
 
-        <div class="space-y-4">
-            <!-- ระบบรหัสห้องใหม่ -->
+        <div class="space-y-3.5">
             <div>
-                <label class="block text-sm font-medium mb-1 text-emerald-400">รหัสห้อง (Room Code):</label>
-                <input type="text" id="room-code" placeholder="ตั้งรหัสห้องใหม่ หรือกรอกของเพื่อน..." class="w-full px-4 py-3 bg-slate-900/90 border border-emerald-500/50 rounded-xl focus:outline-none focus:border-emerald-400 text-white transition font-bold tracking-wider">
+                <label class="block text-xs font-medium mb-1 text-emerald-400">รหัสห้อง (Room Code):</label>
+                <input type="text" id="room-code" placeholder="ตั้งรหัสห้องใหม่ หรือกรอกของเพื่อน..." class="w-full px-4 py-2.5 bg-slate-900/90 border border-emerald-500/50 rounded-xl focus:outline-none focus:border-emerald-400 text-white transition font-bold tracking-wider text-sm">
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1 text-slate-300">ชื่อผู้เล่น / เจ้ามือ:</label>
-                <input type="text" id="player-name" placeholder="กรอกชื่อของคุณ (ซ้ำได้อิสระ)..." class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition">
+                <label class="block text-xs font-medium mb-1 text-slate-300">ชื่อผู้เล่น / เจ้ามือ:</label>
+                <input type="text" id="player-name" placeholder="กรอกชื่อของคุณ (ซ้ำได้อิสระ)..." class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition text-sm">
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1 text-slate-300">เลือกบทบาท:</label>
-                <select id="role-select" class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition" onchange="toggleRoleOptions()">
+                <label class="block text-xs font-medium mb-1 text-slate-300">เลือกบทบาท:</label>
+                <select id="role-select" class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition text-sm" onchange="toggleRoleOptions()">
                     <option value="player">ผู้เล่นทั่วไป (Player)</option>
                     <option value="host_player">เจ้ามือสุ่มเลข + ร่วมเล่นด้วย (Host & Player)</option>
                     <option value="host_only">เจ้ามือควบคุมอย่างเดียว (Host Only)</option>
                 </select>
             </div>
             <div id="card-count-container">
-                <label class="block text-sm font-medium mb-1 text-slate-300">จำนวนใบ Bingo (1-3 ใบ):</label>
-                <select id="card-count" class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition" onchange="renderCardSeedInputs()">
+                <label class="block text-xs font-medium mb-1 text-slate-300">จำนวนใบ Bingo (1-3 ใบ):</label>
+                <select id="card-count" class="w-full px-4 py-2.5 bg-slate-900/90 border border-slate-700 rounded-xl focus:outline-none focus:border-indigo-500 text-white transition text-sm" onchange="renderCardSeedInputs()">
                     <option value="1">1 ใบ</option>
                     <option value="2">2 ใบ</option>
                     <option value="3">3 ใบ</option>
                 </select>
             </div>
-            <div id="card-seeds-container" class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
-                <label class="block font-semibold text-indigo-300 text-xs">รหัสใบ Bingo (เว้นว่างเพื่อสุ่มออโต้):</label>
-                <div id="seed-inputs-list" class="space-y-2"></div>
+            <div id="card-seeds-container" class="space-y-1.5 bg-slate-900/50 p-2.5 rounded-xl border border-slate-700/60">
+                <label class="block font-semibold text-indigo-300 text-[11px]">รหัสใบ Bingo (เว้นว่างเพื่อสุ่มออโต้):</label>
+                <div id="seed-inputs-list" class="space-y-1.5"></div>
             </div>
-            <button onclick="joinGame()" class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-bold rounded-xl shadow-lg shadow-indigo-500/25 transition cursor-pointer">เข้าไปในห้องรอ</button>
+
+            <button onclick="joinGame()" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-bold rounded-xl shadow-lg shadow-indigo-500/25 transition cursor-pointer text-sm">เข้าไปในห้องรอ</button>
+            
+            <!-- ปุ่มเปิดคู่มือการเล่น -->
+            <button onclick="openManualModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 font-semibold rounded-xl text-xs text-indigo-300 transition cursor-pointer flex items-center justify-center gap-1.5">
+                <span>📖</span> คู่มือการเล่น / กติกา
+            </button>
+        </div>
+    </div>
+
+    <!-- MANUAL MODAL (หน้าต่างคู่มือการเล่น) -->
+    <div id="manual-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="glass-panel p-6 sm:p-8 rounded-3xl max-w-xl w-full shadow-2xl border border-indigo-500/30 relative max-h-[85vh] overflow-y-auto">
+            <button onclick="closeManualModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-3xl font-bold leading-none cursor-pointer" title="ปิด">&times;</button>
+            
+            <h2 class="text-2xl font-extrabold text-indigo-400 mb-4 glow-text text-center">📖 คู่มือและคำอธิบายการเล่น Ubonpan Bingo</h2>
+            
+            <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed text-left">
+                <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
+                    <h3 class="font-bold text-indigo-300 mb-1">🔑 1. การเข้าร่วมห้อง (Room Code)</h3>
+                    <p>ผู้เล่นทุกคนต้องกรอก<strong>รหัสห้อง (Room Code)</strong> ให้ตรงกันเพื่อเข้าสู่ห้องเดียวกัน ช่วยให้เล่นแบ่งกลุ่มหลายๆ ทีมพร้อมกันได้โดยข้อมูลในเซิร์ฟเวอร์ไม่ตีกัน</p>
+                </div>
+
+                <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
+                    <h3 class="font-bold text-indigo-300 mb-1">🎭 2. บทบาทหน้าที่ในเกม</h3>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                        <li><strong>ผู้เล่นทั่วไป (Player):</strong> เลือกกระดาน 1-3 ใบ ตั้งรหัสใบเพื่อความสบายใจ เมื่อเจ้ามือสุ่มเลข ผู้เล่นต้องคอยลุ้นและ<strong>คลิกมาร์กช่องเลขบนกระดานด้วยตัวเอง</strong></li>
+                        <li><strong>เจ้ามือสุ่มเลข + ร่วมเล่นด้วย (Host & Player):</strong> มีหน้าที่กดสุ่มเลข และระบบจะ<strong>มาร์กกระดานของเจ้ามือให้อัตโนมัติ</strong>เพื่อความสะดวกรวดเร็ว</li>
+                        <li><strong>เจ้ามือควบคุมอย่างเดียว (Host Only):</strong> ทำหน้าที่ควบคุมแผงสุ่มเลขและจัดการห้องอย่างเดียว</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
+                    <h3 class="font-bold text-indigo-300 mb-1">🏆 3. กติกาการชนะ & ระบบป้องกันการโกง</h3>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-300">
+                        <li>ทำแถวครบ 5 ช่องในแนวนอน, แนวตั้ง หรือแนวทแยง (ช่องกลางเป็น FREE เสมอ)</li>
+                        <li>เมื่อมีผู้เล่นบิงโก ระบบหลังบ้านจะแสดงหน้าต่างตรวจสอบความโปร่งใส (Anti-Cheat Audit) โดย<strong>เฉลยประวัติเลขที่เจ้ามือสุ่มออกจริง</strong>เทียบกับผู้ชนะ เพื่อความโปร่งใส 100%</li>
+                        <li>ผู้เล่นสามารถกดปิด (กากบาท) หน้าจอผู้ชนะชั่วคราว เพื่อกลับมาเลื่อนดูตารางตรวจเช็กของตนเองได้</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900/80 p-3.5 rounded-2xl border border-slate-700">
+                    <h3 class="font-bold text-indigo-300 mb-1">⚙️ 4. ฟีเจอร์เพิ่มเติม</h3>
+                    <p>ผู้เล่นสามารถเข้ามาในห้องรอ (Lobby) ได้ตลอดเวลา เจ้ามือจะเป็นคนกดปุ่มเริ่มเกมพร้อมกันเมื่อสมาชิกพร้อม และสามารถกด "ล้างห้องใหม่" หรือเริ่มรอบใหม่เพื่อเคลียร์ข้อมูลเริ่มเกมใหม่ได้ทันที</p>
+                </div>
+            </div>
+
+            <button onclick="closeManualModal()" class="mt-6 w-full py-3 bg-indigo-600 hover:bg-indigo-500 font-bold rounded-xl shadow-lg transition cursor-pointer text-sm">เข้าใจแล้ว, เริ่มเล่นกันเลย!</button>
         </div>
     </div>
 
@@ -189,7 +235,6 @@
     <!-- WINNER MODAL -->
     <div id="winner-modal" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center z-50 p-4">
         <div class="glass-panel p-8 rounded-3xl max-w-lg w-full text-center shadow-2xl border border-indigo-500/30 relative">
-            <!-- ปุ่ม X มุมขวาสำหรับย่อหน้าต่างเพื่อดูตาราง -->
             <button onclick="document.getElementById('winner-modal').classList.add('hidden')" class="absolute top-5 right-5 text-slate-400 hover:text-white text-3xl font-bold leading-none cursor-pointer" title="ซ่อนเพื่อดูตาราง">&times;</button>
             
             <img src="trophy.png" alt="Winner Trophy" class="w-28 h-28 mx-auto mb-3 animate-bounce drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]">
@@ -240,7 +285,7 @@
     </script>
 
     <script>
-        let roomId = ""; // ตัวแปรเก็บรหัสห้อง
+        let roomId = "";
         let playerName = "";
         let role = "player";
         let cardCount = 1;
@@ -268,6 +313,14 @@
             sfxDraw.play().catch(e => {});
         }
 
+        // ฟังก์ชันควบคุมเปิด-ปิด Modal คู่มือการเล่น
+        function openManualModal() {
+            document.getElementById("manual-modal").classList.remove("hidden");
+        }
+        function closeManualModal() {
+            document.getElementById("manual-modal").classList.add("hidden");
+        }
+
         function toggleRoleOptions() {
             let roleVal = document.getElementById("role-select").value;
             let cardContainer = document.getElementById("card-count-container");
@@ -290,8 +343,8 @@
             for(let i=0; i<count; i++) {
                 container.innerHTML += `
                     <div class="flex items-center gap-2">
-                        <span class="text-xs text-slate-400 w-16">ใบที่ ${i+1}:</span>
-                        <input type="text" id="seed-${i}" placeholder="รหัสใบ (เช่น 777, luckynum)" class="w-full px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <span class="text-[11px] text-slate-400 w-16">ใบที่ ${i+1}:</span>
+                        <input type="text" id="seed-${i}" placeholder="รหัสใบ (เช่น 777)" class="w-full px-2.5 py-1 bg-slate-900 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:border-indigo-500">
                     </div>
                 `;
             }
@@ -347,10 +400,9 @@
         }
 
         function joinGame() {
-            // เช็ครหัสห้อง
             let roomInput = document.getElementById("room-code").value.trim();
             if(!roomInput) {
-                alert("กรุณากรอกรหัสห้องก่อนครับ (ตั้งขึ้นใหม่หรือใส่รหัสของเพื่อน)");
+                alert("กรุณากรอกรหัสห้องก่อนครับ!");
                 return;
             }
             roomId = roomInput;
@@ -364,7 +416,6 @@
             role = document.getElementById("role-select").value;
             cardCount = parseInt(document.getElementById("card-count").value);
 
-            // แสดงรหัสห้องใน UI หน้าต่างๆ
             document.getElementById("wait-room-display").innerText = roomId;
             document.getElementById("host-room-display").innerText = roomId;
             document.getElementById("player-room-display").innerText = roomId;
@@ -381,7 +432,6 @@
                 }
             }
 
-            // บันทึกเข้า Firebase ตามหมวดหมู่ bingoRooms
             window.get(window.ref(window.db, `bingoRooms/${roomId}`)).then((snapshot) => {
                 let data = snapshot.val() || {};
                 let players = data.players || {};
@@ -403,7 +453,6 @@
         }
 
         function initGlobalListener() {
-            // ฟังข้อมูลเฉพาะในห้อง (roomId) ของตัวเองเท่านั้น
             window.onValue(window.ref(window.db, `bingoRooms/${roomId}`), (snapshot) => {
                 let data = snapshot.val();
                 if(!data) return;
