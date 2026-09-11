@@ -47,20 +47,6 @@
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
 
-    <!-- FLOATING VOLUME & RESET CONTROL -->
-    <div class="fixed top-4 right-4 flex items-center gap-2 z-50">
-        <button onclick="resetGame()" class="glass-panel px-3 py-2.5 rounded-2xl text-xs font-semibold text-red-400 hover:bg-red-950/50 shadow-2xl transition cursor-pointer flex items-center gap-1 border border-red-500/30">
-            <span>🔄</span> ล้างห้องใหม่
-        </button>
-        <div class="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-2xl">
-            <span class="text-lg">🔊</span>
-            <div class="flex flex-col">
-                <span class="text-[10px] text-slate-400 font-medium">ระดับเสียง</span>
-                <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.4" class="w-20 accent-indigo-500 cursor-pointer" oninput="changeVolume(this.value)">
-            </div>
-        </div>
-    </div>
-
     <!-- AUDIO ELEMENTS -->
     <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
     <audio id="sfx-draw" src="draw.mp3" preload="auto"></audio>
@@ -148,8 +134,22 @@
         </div>
     </div>
 
-    <!-- WAITING ROOM SCREEN (แสดงกระดานบิงโกตั้งแต่รอห้อง) -->
-    <div id="waiting-screen" class="hidden w-full max-w-6xl mx-auto p-2">
+    <!-- WAITING ROOM SCREEN -->
+    <div id="waiting-screen" class="hidden relative w-full max-w-6xl mx-auto p-2">
+        <!-- FLOATING VOLUME & RESET CONTROL (ย้ายมาภายในคอนเทนเนอร์เพื่อให้ไม่ทับซ้อน) -->
+        <div class="absolute top-4 right-4 flex items-center gap-2 z-50">
+            <button onclick="resetGame()" class="glass-panel px-3 py-2.5 rounded-2xl text-xs font-semibold text-red-400 hover:bg-red-950/50 shadow-2xl transition cursor-pointer flex items-center gap-1 border border-red-500/30">
+                <span>🔄</span> ล้างห้องใหม่
+            </button>
+            <div class="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-2xl">
+                <span class="text-lg">🔊</span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-medium">ระดับเสียง</span>
+                    <input type="range" id="volume-slider-waiting" min="0" max="1" step="0.1" value="0.4" class="w-20 accent-indigo-500 cursor-pointer" oninput="changeVolume(this.value)">
+                </div>
+            </div>
+        </div>
+
         <div class="glass-panel p-6 rounded-3xl w-full max-w-lg mx-auto text-center mb-6">
             <h2 class="text-2xl font-bold text-indigo-400 mb-1">⏳ ห้องรอผู้เล่น</h2>
             <p class="text-xs text-emerald-400 font-semibold tracking-wider mb-2">รหัสห้อง: <span id="wait-room-display"></span></p>
@@ -171,7 +171,21 @@
     </div>
 
     <!-- HOST CONTROL PANEL -->
-    <div id="host-panel" class="hidden w-full max-w-4xl glass-panel p-6 rounded-3xl mb-6">
+    <div id="host-panel" class="hidden relative w-full max-w-4xl glass-panel p-6 rounded-3xl mb-6">
+        <!-- FLOATING VOLUME & RESET CONTROL (ย้ายมาภายในคอนเทนเนอร์เพื่อให้ไม่ทับซ้อน) -->
+        <div class="absolute top-4 right-4 flex items-center gap-2 z-50">
+            <button onclick="resetGame()" class="glass-panel px-3 py-2.5 rounded-2xl text-xs font-semibold text-red-400 hover:bg-red-950/50 shadow-2xl transition cursor-pointer flex items-center gap-1 border border-red-500/30">
+                <span>🔄</span> ล้างห้องใหม่
+            </button>
+            <div class="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-2xl">
+                <span class="text-lg">🔊</span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-medium">ระดับเสียง</span>
+                    <input type="range" id="volume-slider-host" min="0" max="1" step="0.1" value="0.4" class="w-20 accent-indigo-500 cursor-pointer" oninput="changeVolume(this.value)">
+                </div>
+            </div>
+        </div>
+
         <div class="flex justify-between items-center mb-4">
             <div>
                 <h2 class="text-xl font-bold text-indigo-400">🎮 แผงควบคุมเจ้ามือ</h2>
@@ -208,7 +222,21 @@
     </div>
 
     <!-- PLAYER GAME SCREEN -->
-    <div id="player-screen" class="hidden w-full max-w-6xl mx-auto p-2">
+    <div id="player-screen" class="hidden relative w-full max-w-6xl mx-auto p-2">
+        <!-- FLOATING VOLUME & RESET CONTROL (ย้ายมาภายในคอนเทนเนอร์เพื่อให้ไม่ทับซ้อน) -->
+        <div class="absolute top-4 right-4 flex items-center gap-2 z-50">
+            <button onclick="resetGame()" class="glass-panel px-3 py-2.5 rounded-2xl text-xs font-semibold text-red-400 hover:bg-red-950/50 shadow-2xl transition cursor-pointer flex items-center gap-1 border border-red-500/30">
+                <span>🔄</span> ล้างห้องใหม่
+            </button>
+            <div class="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 shadow-2xl">
+                <span class="text-lg">🔊</span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-medium">ระดับเสียง</span>
+                    <input type="range" id="volume-slider-player" min="0" max="1" step="0.1" value="0.4" class="w-20 accent-indigo-500 cursor-pointer" oninput="changeVolume(this.value)">
+                </div>
+            </div>
+        </div>
+
         <div class="flex flex-col md:flex-row justify-between items-center glass-panel p-4 rounded-2xl mb-4 gap-4">
             <div class="flex-1">
                 <h2 class="text-xl font-bold text-indigo-400" id="display-player-name">ผู้เล่น: -</h2>
@@ -305,6 +333,12 @@
         function changeVolume(val) {
             bgm.volume = val;
             sfxDraw.volume = val;
+            // อัปเดต slider ทั้งหมด
+            const sliders = ['volume-slider-waiting', 'volume-slider-host', 'volume-slider-player'];
+            sliders.forEach(id => {
+                const slider = document.getElementById(id);
+                if (slider) slider.value = val;
+            });
         }
 
         function playDrawSound() {
@@ -557,8 +591,7 @@
                 alert(`❌ หมายเลข ${cell.number} ยังไม่ถูกสุ่มออกโดยเจ้ามือ! รอฟังเสียงขานก่อนนะ`);
             }
         }
-
-        // แสดงการ์ดในห้องรอ
+// แสดงการ์ดในห้องรอ
         function renderWaitingBoards() {
             let container = document.getElementById("waiting-boards-container");
             if(!container) return;
@@ -566,7 +599,7 @@
 
             playerBoards.forEach((board, boardIndex) => {
                 let cardHtml = `
-                    <div class="bingo-card p-5 rounded-3xl w-full max-w-sm">
+                    <div class="bingo-card p-5 rounded-3xl w-full max-w-sm relative">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-2">
                             <span class="text-xs font-semibold text-indigo-300 tracking-wider uppercase">BINGO CARD #${boardIndex + 1} (พร้อมแล้ว)</span>
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -601,7 +634,7 @@
 
             playerBoards.forEach((board, boardIndex) => {
                 let cardHtml = `
-                    <div class="bingo-card p-5 rounded-3xl w-full max-w-sm">
+                    <div class="bingo-card p-5 rounded-3xl w-full max-w-sm relative">
                         <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-2">
                             <span class="text-xs font-semibold text-indigo-300 tracking-wider uppercase">BINGO CARD #${boardIndex + 1}</span>
                             <span class="text-[10px] ${role === 'host_player' ? 'text-emerald-400' : 'text-slate-400'}">${role === 'host_player' ? '✔️ ออโต้มาร์กทำงาน' : 'คลิกเลขที่ออกเพื่อมาร์ก'}</span>
