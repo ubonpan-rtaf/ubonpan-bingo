@@ -6,27 +6,65 @@
     <title>Ubonpan Multiplayer Bingo</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Prompt', sans-serif; 
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 27, 75, 0.88)), url('bg.jpg');
-            background-size: cover;
-            background-position: center;
+            background: radial-gradient(circle at 50% 20%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
             background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /* Pure CSS Mesh Glow Background Effects */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: rgba(99, 102, 241, 0.12);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: rgba(168, 85, 247, 0.1);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
         }
         .glass-panel {
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+        .bingo-card {
+            background: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
         .glow-text {
             text-shadow: 0 0 25px rgba(99, 102, 241, 0.7);
         }
+        .cell-marked {
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: #ffffff;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(16, 185, 129, 0.6);
+            border-color: #34d399 !important;
+            transform: scale(0.96);
+        }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen flex flex-col items-center justify-center p-4">
+<body class="text-slate-100 flex flex-col items-center justify-center p-4">
 
     <!-- FLOATING VOLUME CONTROL -->
     <div class="fixed top-4 right-4 glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 z-50 shadow-2xl">
@@ -42,7 +80,7 @@
     <audio id="sfx-draw" src="draw.mp3" preload="auto"></audio>
 
     <!-- LOBBY SCREEN -->
-    <div id="lobby-screen" class="glass-panel p-8 rounded-3xl w-full max-w-md">
+    <div id="lobby-screen" class="glass-panel p-8 rounded-3xl w-full max-w-md my-auto">
         <h1 class="text-3xl font-extrabold text-center mb-6 text-indigo-400 glow-text">🎯 UBONPAN BINGO</h1>
         <div class="space-y-4">
             <div>
@@ -67,14 +105,14 @@
             </div>
             <!-- ช่องกำหนดรหัสใบ เพื่อความสบายใจ -->
             <div id="card-seeds-container" class="space-y-2 bg-slate-900/50 p-3 rounded-xl border border-slate-700/60">
-                <label class="block text-xs font-semibold text-indigo-300">รหัสใบ Bingo (เว้นว่างเพื่อสุ่มออโต้):</label>
+                <label class="block font-semibold text-indigo-300 text-xs">รหัสใบ Bingo (เว้นว่างเพื่อสุ่มออโต้):</label>
                 <div id="seed-inputs-list" class="space-y-2"></div>
             </div>
             <button onclick="joinGame()" class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 font-bold rounded-xl shadow-lg shadow-indigo-500/25 transition cursor-pointer">เข้าสู่สนามแข่ง</button>
         </div>
     </div>
 
-    <!-- HOST CONTROL PANEL (แสดงเมื่อเป็น Host) -->
+    <!-- HOST CONTROL PANEL -->
     <div id="host-panel" class="hidden w-full max-w-4xl glass-panel p-6 rounded-3xl mb-6">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold text-indigo-400">🎮 แผงควบคุมเจ้ามือ (Host Control)</h2>
@@ -84,7 +122,7 @@
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            <div class="text-center bg-slate-900/70 p-4 rounded-2xl border border-slate-700/60">
+            <div class="text-center bg-slate-900/70 p-4 rounded-2xl border border-slate-700/60 shadow-inner">
                 <p class="text-indigo-300 text-xs mb-1">เลขล่าสุด</p>
                 <div id="current-called-number" class="text-6xl font-black text-indigo-400 glow-text">-</div>
             </div>
@@ -92,7 +130,7 @@
                 <button onclick="drawNumber()" class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-lg font-bold rounded-2xl shadow-lg shadow-emerald-500/25 transition cursor-pointer mb-2">🎲 สุ่มหมายเลขถัดไป</button>
                 <div class="flex justify-between text-xs text-slate-400 px-1">
                     <span>ออกแล้ว: <span id="called-count">0</span> / 75 ตัวเลข</span>
-                    <span id="game-status-text" class="text-emerald-400 font-semibold">สถานะ: รอเริ่มเกม</span>
+                    <span id="game-status-text" class="text-emerald-400 font-semibold">สถานะ: กำลังดำเนินการ</span>
                 </div>
             </div>
         </div>
@@ -108,12 +146,12 @@
         </div>
     </div>
 
-    <!-- PLAYER GAME SCREEN (แสดงกระดานบิงโกของผู้เล่น หรือ Host ที่เลือกเล่นด้วย) -->
+    <!-- PLAYER GAME SCREEN -->
     <div id="player-screen" class="hidden w-full max-w-6xl mx-auto p-2">
         <div class="flex flex-col md:flex-row justify-between items-center glass-panel p-4 rounded-2xl mb-6 gap-4">
             <div>
                 <h2 class="text-xl font-bold text-indigo-400" id="display-player-name">ผู้เล่น: -</h2>
-                <p class="text-sm text-slate-400">ลุ้นหมายเลขและตรวจเช็กตารางอัตโนมัติแบบเรียลไทม์</p>
+                <p class="text-sm text-slate-400">ระบบมาร์กเลขและเช็กบิงโกอัตโนมัติแบบเรียลไทม์</p>
             </div>
             <div class="bg-slate-900/90 px-6 py-3 rounded-xl border border-slate-700 text-center shadow-inner">
                 <span class="text-xs text-slate-400 block">เลขล่าสุดจากเจ้ามือ</span>
@@ -173,7 +211,7 @@
         const bgm = document.getElementById('bgm');
         const sfxDraw = document.getElementById('sfx-draw');
         bgm.volume = 0.4;
-        sfxDraw.volume = 0.5;
+        sfxDraw.volume = 0.6;
 
         function changeVolume(val) {
             bgm.volume = val;
@@ -214,7 +252,6 @@
             }
         }
 
-        // Seedy Random generator to ensure custom card number always generates identical unique card
         function seededRandom(seedStr) {
             let hash = 0;
             for (let i = 0; i < seedStr.length; i++) {
@@ -277,7 +314,6 @@
             bgm.play().catch(e => {});
             document.getElementById("lobby-screen").classList.add("hidden");
 
-            // Handle UI layout based on role
             if(role === "host_only") {
                 document.getElementById("host-panel").classList.remove("hidden");
                 initHostListeners();
@@ -296,7 +332,6 @@
                 initHostListeners();
                 initPlayerListeners();
             } else {
-                // Regular player
                 document.getElementById("player-screen").classList.remove("hidden");
                 document.getElementById("display-player-name").innerText = `ผู้เล่น: ${playerName}`;
                 
@@ -317,23 +352,29 @@
 
             playerBoards.forEach((board, boardIndex) => {
                 let cardHtml = `
-                    <div class="glass-panel p-5 rounded-3xl w-full max-w-sm">
-                        <h3 class="text-center font-bold text-indigo-400 mb-4 text-lg">🎯 ใบ Bingo ที่ ${boardIndex + 1}</h3>
-                        <div class="grid grid-cols-5 gap-2 text-center font-semibold">
-                            <div class="bg-indigo-900/70 py-2 rounded-xl text-xs font-bold text-indigo-300">B</div>
-                            <div class="bg-indigo-900/70 py-2 rounded-xl text-xs font-bold text-indigo-300">I</div>
-                            <div class="bg-indigo-900/70 py-2 rounded-xl text-xs font-bold text-indigo-300">N</div>
-                            <div class="bg-indigo-900/70 py-2 rounded-xl text-xs font-bold text-indigo-300">G</div>
-                            <div class="bg-indigo-900/70 py-2 rounded-xl text-xs font-bold text-indigo-300">O</div>
+                    <div class="bingo-card p-5 rounded-3xl w-full max-w-sm">
+                        <div class="flex justify-between items-center mb-4 border-b border-slate-700/60 pb-2">
+                            <span class="text-xs font-semibold text-indigo-300 tracking-wider uppercase">BINGO CARD #${boardIndex + 1}</span>
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        </div>
+                        <div class="grid grid-cols-5 gap-2 text-center font-bold">
+                            <div class="bg-indigo-600/30 text-indigo-300 py-2 rounded-xl text-xs border border-indigo-500/30">B</div>
+                            <div class="bg-indigo-600/30 text-indigo-300 py-2 rounded-xl text-xs border border-indigo-500/30">I</div>
+                            <div class="bg-indigo-600/30 text-indigo-300 py-2 rounded-xl text-xs border border-indigo-500/30">N</div>
+                            <div class="bg-indigo-600/30 text-indigo-300 py-2 rounded-xl text-xs border border-indigo-500/30">G</div>
+                            <div class="bg-indigo-600/30 text-indigo-300 py-2 rounded-xl text-xs border border-indigo-500/30">O</div>
                 `;
 
                 for(let r=0; r<5; r++) {
                     for(let c=0; c<5; c++) {
                         let cell = board[r][c];
-                        let bgClass = cell.marked 
-                            ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30 scale-95 font-bold" 
-                            : "bg-slate-900/90 text-slate-200 border border-slate-800";
-                        cardHtml += `<div class="h-13 flex items-center justify-center rounded-xl text-sm sm:text-base transition-all duration-200 ${bgClass}">${cell.number}</div>`;
+                        let cellClass = cell.number === "FREE" 
+                            ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-extrabold shadow-inner" 
+                            : (cell.marked 
+                                ? "cell-marked text-white font-extrabold border" 
+                                : "bg-slate-900/90 text-slate-200 border border-slate-800 hover:border-indigo-500/50");
+                        
+                        cardHtml += `<div class="h-14 flex items-center justify-center rounded-xl text-base sm:text-lg transition-all duration-300 ${cellClass}">${cell.number}</div>`;
                     }
                 }
                 cardHtml += `</div></div>`;
@@ -351,12 +392,12 @@
                     document.getElementById("current-called-number").innerText = data.lastCalled || "-";
                     document.getElementById("called-count").innerText = calledNumbersList.length;
                     
-                    let historyHtml = calledNumbersList.map(n => `<span class="px-2.5 py-1 bg-slate-800 rounded-lg border border-slate-700">${n}</span>`).join('');
+                    let historyHtml = calledNumbersList.map(n => `<span class="px-2.5 py-1 bg-slate-800/90 rounded-lg border border-slate-700 text-xs font-semibold">${n}</span>`).join('');
                     document.getElementById("called-history").innerHTML = historyHtml;
 
                     let players = data.players || {};
-                    let playersHtml = Object.keys(players).map(p => `<div class="px-3 py-1 bg-slate-800 rounded-xl border border-slate-700 flex justify-between"><span>👤 ${p}</span><span class="text-indigo-400">${players[p].status}</span></div>`).join('');
-                    document.getElementById("players-list").innerHTML = playersHtml || '<span class="text-slate-500">ยังไม่มีผู้เล่นในระบบ</span>';
+                    let playersHtml = Object.keys(players).map(p => `<div class="px-3 py-1.5 bg-slate-800/90 rounded-xl border border-slate-700 flex justify-between text-xs"><span>👤 ${p}</span><span class="text-indigo-400 font-medium">${players[p].status}</span></div>`).join('');
+                    document.getElementById("players-list").innerHTML = playersHtml || '<span class="text-slate-500 text-xs">ยังไม่มีผู้เล่นในระบบ</span>';
 
                     if(data.winner) {
                         document.getElementById("winner-announcement").innerText = `ผู้เล่น "${data.winner}" ทำการ BINGO สำเร็จแล้ว!`;
@@ -376,8 +417,10 @@
                 num = Math.floor(Math.random() * 75) + 1;
             } while(calledNumbersList.includes(num));
 
-            calledNumbersList.push(num);
+            // เล่นเสียงเอฟเฟกต์ (ประมาณ 3 วินาทีตามที่ผู้ใช้ต้องการ)
             playDrawSound();
+
+            calledNumbersList.push(num);
 
             aiBots.forEach(bot => {
                 checkBotWin(bot, num);
@@ -487,7 +530,6 @@
             }
         }
 
-        // Initialize seed inputs on load
         window.onload = () => {
             renderCardSeedInputs();
         };
